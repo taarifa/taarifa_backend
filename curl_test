@@ -1,0 +1,1 @@
+curl -v -X POST -d '{"title": "Report title", "longitude": "3.42", "latitude": "3.12121"}' -H "Content-Type: application/json" localhost:5000/sendreport
