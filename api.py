@@ -5,7 +5,7 @@ import json
 
 logger = app.logger
 
-@app.route("/sendreport", methods=['POST'])
+@app.route("/reports", methods=['POST'])
 def receive_report():
     """
     post report to the backend

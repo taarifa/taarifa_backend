@@ -11,5 +11,3 @@ class Report(db.Document):
 
     def __unicode__(self):
         return ','.join(map(str, [self.created_at, self.title, self.latitude, self.longitude]))
-
-
