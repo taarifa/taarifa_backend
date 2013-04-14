@@ -33,7 +33,13 @@ def get_all_reports():
 @app.route("/reports/<string:report_id>", methods=['GET'])
 def get_report(report_id = False):
     # TODO: return JSON
-    return 'Nothing here yet'
+    all_reports = BasicReport.objects.all()
+    report_ids = map(lambda r: r.report_id, all_reports)
+    for r in all_reports:
+        if r.report_id == report_id:
+            return jsonify(result=_help.mongo_to_dict(r))
+    return 'No report found'
+
 
 @app.route("/services", methods=['GET'])
 def get_list_of_all_services():
@@ -77,7 +83,7 @@ def _save_report(report):
     r.save()
 
 def _verify_report(report):
-    expected_fields = ['title', 'longitude', 'latitude']
+    expected_fields = ['title', 'longitude', 'latitude', 'report_id']
     report_ok = len(expected_fields) == len(report.keys());
     for f in report.keys():
         if f not in expected_fields:
