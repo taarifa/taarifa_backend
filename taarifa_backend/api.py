@@ -28,9 +28,7 @@ def receive_report():
 def get_all_reports():
     # TODO: return JSON
     all_reports = BasicReport.objects.all()
-    for r in all_reports:
-        logger.debug(r)
-    return 'TODO: have to return reports'
+    return jsonify(result=map(_help.mongo_to_dict, all_reports))
 
 @app.route("/reports/<string:report_id>", methods=['GET'])
 def get_report(report_id = False):
