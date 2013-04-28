@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, render_template
 from taarifa_backend import app
-from models import BasicReport
+from models import BasicReport, Reportable
 import models
+import mongoengine
 import json
 import _help
 import pprint
@@ -48,23 +49,46 @@ def receive_report():
     logger.debug('Report post received')
     logger.debug('JSON: ' + request.json.__repr__())
 
-    _save_report(request.json)
-    
-    # Check database
-    reports = BasicReport.objects.all()
-    logger.debug('Reports in the database \n' + ', '.join(map(lambda x: x.__repr__(), reports)))
+    # TODO: Deal with errors regarding a non existing error code
+    service_code = request.json['service_code']
+    service_class = models.get_service_class(service_code)
 
-    return "Report post received\n"
+    # TODO: Handle errors if the report field is not available
+    data = request.json['data']
+    data.update(dict(service_code=service_code))
+    logger.debug(data.__repr__())
+    db_obj = service_class(**data)
+    logger.debug(db_obj.__unicode__())
+
+    try:
+        db_obj.save()
+    except mongoengine.ValidationError, e:
+        logger.debug(e)
+        # TODO: Send specification of the service used
+        return "Validation Error encounter: %s\n" % e
+
+    # Check database
+    reports = service_class.objects.all()
+    logger.debug('Reports for this service \n' + ', '.join(map(lambda x: x.__repr__(), reports)))
+
+    return "Report post received and saved to the Database\n"
 
 @app.route("/reports", methods=['GET'])
-def get_all_reports():
-    # TODO: return JSON
-    all_reports = BasicReport.objects.all()
-    return jsonify(result=map(_help.mongo_to_dict, all_reports))
+def query_reports():
+    logger.debug(request.args.__repr__())
+    service_code = request.args.get('service_code', None)
+    
+    service_class = models.get_service_class(service_code) if service_code else Reportable
+
+    all_reports = service_class.objects.all() if service_class else []
+
+    logger.debug(all_reports.__repr__())
+    result = map(_help.mongo_to_dict, all_reports)
+    return jsonify(result=result)
 
 @app.route("/reports/<string:report_id>", methods=['GET'])
 def get_report(report_id = False):
-    # TODO: return JSON
+    # TODO: Needs to be changed, all reports should be searched using the unique id to identify the specified report
     all_reports = BasicReport.objects.all()
     report_ids = map(lambda r: r.report_id, all_reports)
     for r in all_reports:
@@ -78,12 +102,13 @@ def get_list_of_all_services():
     # TODO: factor out the transformation from a service to json
     return jsonify(**get_services())
 
+
 def _save_report(report):
     report_ok = _verify_report(report)
     if not report_ok:
         return
 
-    for k,v in report.iteritems():
+    for k, v in report.iteritems():
         if k in ['longitude', 'latitude']:
             report[k] = float(v)
     r = BasicReport(**report)
