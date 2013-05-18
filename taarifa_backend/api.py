@@ -49,7 +49,7 @@ def receive_report():
     logger.debug('Report post received')
     logger.debug('JSON: ' + request.json.__repr__())
 
-    # TODO: Deal with errors regarding a non existing error code
+    # TODO: Deal with errors regarding a non existing service code
     service_code = request.json['service_code']
     service_class = models.get_service_class(service_code)
 
