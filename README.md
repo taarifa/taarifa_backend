@@ -25,4 +25,4 @@ Start the server
 python manage.py runserver
 ```
 
-Run the curl_test script from the console to try sending a report via JSON
+Run the curl_send_report script from the console to try sending a report via JSON
