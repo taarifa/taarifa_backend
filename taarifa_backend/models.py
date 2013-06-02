@@ -6,7 +6,7 @@ from taarifa_backend import db
 class BasicReport(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now, required=True)
     title = db.StringField(max_length=255, required=True)
-    description = db.StringField(required=False)
+    desc = db.StringField(required=False)
     latitude = db.FloatField(required=True)
     longitude = db.FloatField(required=True)
 
@@ -18,7 +18,7 @@ class BasicReport(db.Document):
     protocol_type = None
 
     def __unicode__(self):
-        return ','.join(map(str, [self.created_at, self.title, self.latitude, self.longitude]))
+        return ','.join(map(str, [self.created_at, self.title, self.desc, self.latitude, self.longitude]))
 
 class AdvancedReport(BasicReport):
     complicated_information = db.StringField(max_length=255, required=False)
