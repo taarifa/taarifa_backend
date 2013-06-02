@@ -50,13 +50,11 @@ def receive_report():
     logger.debug('Report post received')
     logger.debug('JSON: ' + request.json.__repr__())
 
-    _save_report(request.json)
-    
-    # Check database
-    reports = BasicReport.objects.all()
-    logger.debug('Reports in the database \n' + ', '.join(map(lambda x: x.__repr__(), reports)))
-
-    return "Report post received\n"
+    doc = _save_report(request.json)
+    if doc:
+        return jsonify(_help.mongo_to_dict(doc))
+    else:
+        return jsonify({})
 
 @app.route("/reports", methods=['GET'])
 @crossdomain(origin='*')
@@ -81,21 +79,8 @@ def get_list_of_all_services():
     return jsonify(**get_services())
 
 def _save_report(report):
-    report_ok = _verify_report(report)
-    if not report_ok:
-        return
-
     for k,v in report.iteritems():
         if k in ['longitude', 'latitude']:
             report[k] = float(v)
     r = BasicReport(**report)
-    r.save()
-
-def _verify_report(report):
-    expected_fields = ['title', 'longitude', 'latitude']
-    report_ok = len(expected_fields) == len(report.keys());
-    for f in report.keys():
-        if f not in expected_fields:
-            logger.debug('Field %s was unexpected. Possible fields are: %s. Report has not been saved' % (f, ', '.join(expected_fields)))
-            report_ok = False
-    return report_ok
+    return r.save()
