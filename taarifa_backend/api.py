@@ -42,7 +42,7 @@ def landing():
     return render_template('landing.html', services=pprint.pformat(get_services()))
 
 @app.route("/reports", methods=['POST'])
-@crossdomain(origin='*')
+@crossdomain(origin='*', headers="Origin, X-Requested-With, Content-Type, Accept")
 def receive_report():
     """
     post report to the backend
