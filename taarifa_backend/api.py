@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template, make_response
 from taarifa_backend import app
 from models import BasicReport
-from utils import crossdomain
+from utils import crossdomain, jsonp
 import models
 import json
 import _help
@@ -59,6 +59,7 @@ def receive_report():
 
 @app.route("/reports", methods=['GET'])
 @crossdomain(origin='*')
+@jsonp
 def get_all_reports():
     # TODO: return JSON
     all_reports = BasicReport.objects.all()
@@ -66,6 +67,7 @@ def get_all_reports():
 
 @app.route("/reports/<string:report_id>", methods=['GET'])
 @crossdomain(origin='*')
+@jsonp
 def get_report(report_id = False):
     # TODO: return JSON
     report = BasicReport.objects(report_id=report_id)[0]
@@ -74,6 +76,7 @@ def get_report(report_id = False):
 
 @app.route("/services", methods=['GET'])
 @crossdomain(origin='*')
+@jsonp
 def get_list_of_all_services():
     # TODO: factor out the transformation from a service to json
     return jsonify(**get_services())
