@@ -6,6 +6,7 @@ from taarifa_backend import db
 class BasicReport(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now, required=True)
     title = db.StringField(max_length=255, required=True)
+    description = db.StringField(required=False)
     latitude = db.FloatField(required=True)
     longitude = db.FloatField(required=True)
     # HACK: The user specifies the report_id
