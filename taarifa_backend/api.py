@@ -65,12 +65,8 @@ def get_all_reports():
 @app.route("/reports/<string:report_id>", methods=['GET'])
 def get_report(report_id = False):
     # TODO: return JSON
-    all_reports = BasicReport.objects.all()
-    report_ids = map(lambda r: r.report_id, all_reports)
-    for r in all_reports:
-        if r.report_id == report_id:
-            return jsonify(result=_help.mongo_to_dict(r))
-    return 'No report found'
+    report = BasicReport.objects(report_id=report_id)[0]
+    return jsonify(result=_help.mongo_to_dict(report))
 
 
 @app.route("/services", methods=['GET'])
