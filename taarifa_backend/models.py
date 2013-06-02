@@ -9,8 +9,6 @@ class BasicReport(db.Document):
     description = db.StringField(required=False)
     latitude = db.FloatField(required=True)
     longitude = db.FloatField(required=True)
-    # HACK: The user specifies the report_id
-    report_id = db.StringField(required=True)
 
     description = "Basic location based report"
     keywords = ['basic', 'location', 'report']

@@ -62,16 +62,14 @@ def receive_report():
 @crossdomain(origin='*')
 @jsonp
 def get_all_reports():
-    # TODO: return JSON
     all_reports = BasicReport.objects.all()
     return make_response(json.dumps(map(_help.mongo_to_dict, all_reports)))
 
-@app.route("/reports/<string:report_id>", methods=['GET'])
+@app.route("/reports/<string:id>", methods=['GET'])
 @crossdomain(origin='*')
 @jsonp
-def get_report(report_id = False):
-    # TODO: return JSON
-    report = BasicReport.objects(report_id=report_id)[0]
+def get_report(id = False):
+    report = BasicReport.objects.with_id(id)
     return jsonify(_help.mongo_to_dict(report))
 
 
@@ -94,7 +92,7 @@ def _save_report(report):
     r.save()
 
 def _verify_report(report):
-    expected_fields = ['title', 'longitude', 'latitude', 'report_id']
+    expected_fields = ['title', 'longitude', 'latitude']
     report_ok = len(expected_fields) == len(report.keys());
     for f in report.keys():
         if f not in expected_fields:
