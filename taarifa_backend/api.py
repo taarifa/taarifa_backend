@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, make_response
 from taarifa_backend import app
 from models import BasicReport
+from utils import crossdomain
 import models
 import json
 import _help
@@ -57,12 +58,14 @@ def receive_report():
     return "Report post received\n"
 
 @app.route("/reports", methods=['GET'])
+@crossdomain(origin='*')
 def get_all_reports():
     # TODO: return JSON
     all_reports = BasicReport.objects.all()
     return make_response(json.dumps(map(_help.mongo_to_dict, all_reports)))
 
 @app.route("/reports/<string:report_id>", methods=['GET'])
+@crossdomain(origin='*')
 def get_report(report_id = False):
     # TODO: return JSON
     report = BasicReport.objects(report_id=report_id)[0]
@@ -70,6 +73,7 @@ def get_report(report_id = False):
 
 
 @app.route("/services", methods=['GET'])
+@crossdomain(origin='*')
 def get_list_of_all_services():
     # TODO: factor out the transformation from a service to json
     return jsonify(**get_services())
