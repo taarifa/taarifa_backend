@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, make_response
 from taarifa_backend import app
 from models import BasicReport
 import models
@@ -60,13 +60,13 @@ def receive_report():
 def get_all_reports():
     # TODO: return JSON
     all_reports = BasicReport.objects.all()
-    return jsonify(result=map(_help.mongo_to_dict, all_reports))
+    return make_response(json.dumps(map(_help.mongo_to_dict, all_reports)))
 
 @app.route("/reports/<string:report_id>", methods=['GET'])
 def get_report(report_id = False):
     # TODO: return JSON
     report = BasicReport.objects(report_id=report_id)[0]
-    return jsonify(result=_help.mongo_to_dict(report))
+    return jsonify(_help.mongo_to_dict(report))
 
 
 @app.route("/services", methods=['GET'])
