@@ -39,40 +39,55 @@ Defines a report template, i.e. the set of fields which are part of the report, 
 This is comparable to a custom form.
 
 
-POST services
 Creates a new service
-GET services
-Gets list of all services
+```
+POST services
+```
 
+List services
+```
+GET services
+```
+
+```
 GET services/{service_id}
 UPDATE services/{service_id}
 DELETE services/{service_id}
+```
 
 Reports:
 
 The collection of information about which a report is made. Must use one previously defined service.
 
+Create a new report
+```
 POST reports
-Creates a new report.
+```
 
+list reports
+```
 GET reports
-list of all reports
-
+```
+```
 GET reports/{report_id}
 UPDATE reports/{report_id}
 DELETE reports/{report_id}
-
+```
 Workflow:
 
 Defines a set of possible states and the possible transitions between them.
 Workflows can be attached to services.
 As a first step a workflow is just a set of states.
 
-POST workflows
 Create a new workflow
-
+```
+POST workflows
+```
+```
 GET workflows
-
+```
+```
 UPDATE workflows/{workflow_id}
 DELETE workflows/{workflow_id}
 GET workflows/{workflow_id}
+```
