@@ -27,6 +27,7 @@ class Reportable(db.Document):
 
 
 class Waterpoint(Reportable):
+    # Duplication of ids because the waterpoint dataset already contains ids
     waterpoint_id = db.StringField(required=True)
     functional = db.BooleanField(required=True)
 
@@ -42,8 +43,7 @@ class Waterpoint(Reportable):
 
 class BasicReport(Reportable):
     title = db.StringField(max_length=255, required=True)
-    # HACK: The user specifies the report_id
-    report_id = db.StringField(required=True)
+    desc = db.StringField(required=False)
 
     # TODO: Move the descriptive fields into a metadata dictionary/object
     description = "Basic location based report"
@@ -56,7 +56,7 @@ class BasicReport(Reportable):
     meta = {'allow_inheritance': True}
 
     def __unicode__(self):
-        return ','.join(map(str, [self.created_at, self.title, self.latitude, self.longitude]))
+        return ','.join(map(str, [self.created_at, self.title, self.desc, self.latitude, self.longitude]))
 
 
 class AdvancedReport(BasicReport):

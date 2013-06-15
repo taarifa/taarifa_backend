@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, make_response
 from taarifa_backend import app
 from models import BasicReport, Reportable
+from utils import crossdomain, jsonp
 import models
 import mongoengine
 import json
@@ -37,11 +38,14 @@ def get_services():
         response[service_name] = service
     return response
 
+
 @app.route("/")
 def landing():
     return render_template('landing.html', services=pprint.pformat(get_services()))
 
+
 @app.route("/reports", methods=['POST'])
+@crossdomain(origin='*', headers="Origin, X-Requested-With, Content-Type, Accept")
 def receive_report():
     """
     post report to the backend
@@ -61,20 +65,19 @@ def receive_report():
     logger.debug(db_obj.__unicode__())
 
     try:
-        db_obj.save()
+        doc = db_obj.save()
     except mongoengine.ValidationError, e:
         logger.debug(e)
-        # TODO: Send specification of the service used
-        return "Validation Error encounter: %s\n" % e
+        # TODO: Send specification of the service used and a better error description
+        return jsonify({'Error': 'Validation Error'})
 
-    # Check database
-    reports = service_class.objects.all()
-    logger.debug('Reports for this service \n' + ', '.join(map(lambda x: x.__repr__(), reports)))
+    return jsonify(_help.mongo_to_dict(doc))
 
-    return "Report post received and saved to the Database\n"
 
 @app.route("/reports", methods=['GET'])
-def query_reports():
+@crossdomain(origin='*')
+@jsonp
+def get_all_reports():
     logger.debug(request.args.__repr__())
     service_code = request.args.get('service_code', None)
     
@@ -82,43 +85,22 @@ def query_reports():
 
     all_reports = service_class.objects.all() if service_class else []
 
-    logger.debug(all_reports.__repr__())
     result = map(_help.mongo_to_dict, all_reports)
-    return jsonify(result=result)
+    return make_response(json.dumps(result))
 
-@app.route("/reports/<string:report_id>", methods=['GET'])
-def get_report(report_id = False):
-    # TODO: Needs to be changed, all reports should be searched using the unique id to identify the specified report
-    all_reports = BasicReport.objects.all()
-    report_ids = map(lambda r: r.report_id, all_reports)
-    for r in all_reports:
-        if r.report_id == report_id:
-            return jsonify(result=_help.mongo_to_dict(r))
-    return 'No report found'
+
+@app.route("/reports/<string:id>", methods=['GET'])
+@crossdomain(origin='*')
+@jsonp
+def get_report(id = False):
+    # TODO: This is still using BasicReport, should be moved to service based world
+    report = BasicReport.objects.with_id(id)
+    return jsonify(_help.mongo_to_dict(report))
 
 
 @app.route("/services", methods=['GET'])
+@crossdomain(origin='*')
+@jsonp
 def get_list_of_all_services():
     # TODO: factor out the transformation from a service to json
     return jsonify(**get_services())
-
-
-def _save_report(report):
-    report_ok = _verify_report(report)
-    if not report_ok:
-        return
-
-    for k, v in report.iteritems():
-        if k in ['longitude', 'latitude']:
-            report[k] = float(v)
-    r = BasicReport(**report)
-    r.save()
-
-def _verify_report(report):
-    expected_fields = ['title', 'longitude', 'latitude', 'report_id']
-    report_ok = len(expected_fields) == len(report.keys());
-    for f in report.keys():
-        if f not in expected_fields:
-            logger.debug('Field %s was unexpected. Possible fields are: %s. Report has not been saved' % (f, ', '.join(expected_fields)))
-            report_ok = False
-    return report_ok
