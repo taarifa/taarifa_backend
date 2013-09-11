@@ -6,14 +6,16 @@ db_type_to_name = {
     db.FloatField: 'Float'
 }
 
+
 def db_type_to_string(db_type):
     return db_type_to_name.get(db_type, 'Unknown')
+
 
 def mongo_to_dict(obj):
     return_data = []
 
     if isinstance(obj, db.Document):
-        return_data.append(("id",str(obj.id)))
+        return_data.append(("id", str(obj.id)))
 
     for field_name in obj._fields:
 

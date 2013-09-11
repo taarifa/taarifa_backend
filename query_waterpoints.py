@@ -2,11 +2,10 @@
 import requests
 import json
 
+
 def get_all_reports():
     url = 'http://localhost:5000/reports'
-    params = dict(
-            service_code='wp001',
-            )
+    params = {'service_code': 'wp001'}
 
     response = requests.get(url, params=params)
     print response.url
@@ -19,4 +18,3 @@ def get_all_reports():
 
 if __name__ == '__main__':
     get_all_reports()
-

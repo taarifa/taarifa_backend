@@ -5,15 +5,19 @@ import json
 
 CSV_FN = 'waterpoints.csv'
 REPORTS_URL = 'http://localhost:5000/reports'
+
+
 class Waterpoint(object):
+
     def __init__(self, _id, lat, _long, functional):
         self.id = str(_id)
         self.lat = lat
         self.long = _long
         self.functional = functional
+
     def __repr__(self):
         return 'Waterpoint(%s, %s, %s, %s)' % (self.id, self.lat, self.long,
-            self.functional)
+                                               self.functional)
 
 
 def parse_csv(csv_fn):
@@ -30,11 +34,12 @@ def parse_csv(csv_fn):
             functional = status == 'Functional'
             try:
                 _lat, _long = float(d['LATITUDE']), float(d['LONGITUDE'])
-            except ValueError as e:
+            except ValueError:
                 continue
             waterpoints.append(Waterpoint(_id, _lat, _long, functional))
             _id += 1
     return waterpoints
+
 
 def send_report(wp):
     headers = {'content-type': 'application/json'}
@@ -54,5 +59,3 @@ if __name__ == '__main__':
     for w in waterpoints:
         print w
         send_report(w)
-
-

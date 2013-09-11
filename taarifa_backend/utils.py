@@ -45,6 +45,7 @@ def crossdomain(origin=None, methods=None, headers=None,
         return update_wrapper(wrapped_function, f)
     return decorator
 
+
 def jsonp(func):
     """Wraps JSONified output for JSONP requests."""
     @wraps(func)

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, make_response
+from flask import request, jsonify, render_template, make_response
 from taarifa_backend import app
 from models import BasicReport, Reportable
 from utils import crossdomain, jsonp
@@ -6,9 +6,10 @@ import models
 import mongoengine
 import json
 import _help
-import pprint
+from pprint import pformat
 
 logger = app.logger
+
 
 def get_services():
     response = {}
@@ -32,7 +33,8 @@ def get_services():
             field['type'] = _help.db_type_to_string(f.__class__)
             field_dict[name] = field
         service['fields'] = field_dict
-        for key in ['protocol_type', 'keywords', 'service_name', 'service_code', 'group', 'description']:
+        for key in ['protocol_type', 'keywords', 'service_name',
+                    'service_code', 'group', 'description']:
             service[key] = getattr(service_description, key)
         logger.debug(service)
         response[service_name] = service
@@ -41,7 +43,7 @@ def get_services():
 
 @app.route("/")
 def landing():
-    return render_template('landing.html', services=pprint.pformat(get_services()))
+    return render_template('landing.html', services=pformat(get_services()))
 
 
 @app.route("/reports", methods=['POST'])
@@ -68,7 +70,8 @@ def receive_report():
         doc = db_obj.save()
     except mongoengine.ValidationError, e:
         logger.debug(e)
-        # TODO: Send specification of the service used and a better error description
+        # TODO: Send specification of the service used and a better error
+        # description
         return jsonify({'Error': 'Validation Error'})
 
     return jsonify(_help.mongo_to_dict(doc))
@@ -80,8 +83,9 @@ def receive_report():
 def get_all_reports():
     logger.debug(request.args.__repr__())
     service_code = request.args.get('service_code', None)
-    
-    service_class = models.get_service_class(service_code) if service_code else Reportable
+
+    service_class = models.get_service_class(
+        service_code) if service_code else Reportable
 
     all_reports = service_class.objects.all() if service_class else []
 
@@ -92,8 +96,9 @@ def get_all_reports():
 @app.route("/reports/<string:id>", methods=['GET'])
 @crossdomain(origin='*')
 @jsonp
-def get_report(id = False):
-    # TODO: This is still using BasicReport, should be moved to service based world
+def get_report(id=False):
+    # TODO: This is still using BasicReport, should be moved to service based
+    # world
     report = BasicReport.objects.with_id(id)
     return jsonify(_help.mongo_to_dict(report))
 

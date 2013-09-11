@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 def send_report():
     url = 'http://localhost:5000/reports'
     headers = {'content-type': 'application/json'}
@@ -16,4 +17,3 @@ def send_report():
 
 if __name__ == '__main__':
     send_report()
-

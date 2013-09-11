@@ -5,7 +5,8 @@ from os import environ
 import urlparse
 
 # configure the logging
-logging.basicConfig(level='DEBUG', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level='DEBUG',
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
 if environ.get('MONGOLAB_URI'):
@@ -20,15 +21,16 @@ else:
 
 db = MongoEngine(app)
 
+
 def register_views():
     """
     to avoid circular dependencies and register the routes
     """
     from api import receive_report
-    pass
 
 register_views()
-app.logger.debug('Registered views are: \n' + app.view_functions.keys().__repr__())
+app.logger.debug('Registered views are: \n' +
+                 app.view_functions.keys().__repr__())
 
 if __name__ == '__main__':
     app.run()
