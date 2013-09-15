@@ -26,7 +26,7 @@ def register_views():
     """
     to avoid circular dependencies and register the routes
     """
-    from api import receive_report
+    from api import receive_report  # noqa: needed for app to see the routes
 
 register_views()
 app.logger.debug('Registered views are: \n' +
