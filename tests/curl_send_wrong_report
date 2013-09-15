@@ -1,3 +1,4 @@
+#!/bin/sh
 curl -v -X POST -d '{"service_code": "wp001", "data": {"longitude": "3.42", "latitude": "3.12121", "waterpoint_id": "WP_LOC_CODE_001", "functional": true}}' -H "Content-Type: application/json" localhost:5000/reports
 curl -v -X POST -d '{"service_code": "wp001", "data": {"latitude": 3.12121, "waterpoint_id": "WP_LOC_CODE_001", "functional": true}}' -H "Content-Type: application/json" localhost:5000/reports
 curl -v -X POST -d '{"service_code": "wp001", "data": {"longitude": 3.42, "latitude": 3.12121, "waterpoint_id": "WP_LOC_CODE_001", "functional": true, "wrong_argument": 3}}' -H "Content-Type: application/json" localhost:5000/reports

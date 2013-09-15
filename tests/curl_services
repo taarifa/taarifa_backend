@@ -1,1 +1,2 @@
+#!/bin/sh
 curl -v -X GET localhost:5000/services
