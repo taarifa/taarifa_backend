@@ -12,13 +12,18 @@ Installation
 
     mongod
 
+If you're on a Ubuntu/Debian system and have installed MongoDB via
+your package manager, start the service instead ::
+
+    sudo service mongodb start
+
 Install python dependencies using pip_ ::
 
     pip install -r requirements.txt
 
 Start the server ::
 
-    python manage.py runserver
+    python taarifa_backend/manage.py runserver
 
 Run the ``curl_send_report`` script from the console to try sending a
 report via JSON
