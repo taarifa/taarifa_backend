@@ -31,14 +31,6 @@ security = Security(app, user_datastore)
 from taarifa_backend.api import api
 app.register_blueprint(api)
 
-
-def register_views():
-    """
-    to avoid circular dependencies and register the routes
-    """
-    from api import receive_report  # noqa: needed for app to see the routes
-
-register_views()
 app.logger.debug('Registered views are: \n' +
                  app.view_functions.keys().__repr__())
 
