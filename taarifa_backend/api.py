@@ -4,6 +4,7 @@ from pprint import pformat
 
 from flask import Blueprint, request, jsonify, render_template, make_response, redirect, flash
 from flask.ext.security import http_auth_required
+from flask.ext.mongoengine.wtf import model_form
 import mongoengine
 
 import models
@@ -74,8 +75,13 @@ def receive_report():
 @api.route("/reports/add", methods=['GET', 'POST'])
 def add_report():
     service_code = request.args.get('service_code', None)
-    form = models.get_form(service_code)()
-    if form.validate_on_submit():
+    service = models.get_service_class(service_code)
+    form = model_form(service, exclude=['created_at'])(request.form)
+    # FIXME: use form.validate_on_submit() once it's working
+    if form.is_submitted():
+        doc = service(**form.data)
+        logger.debug(form.data)
+        doc.save()
         flash("Report successfully submitted!")
         return redirect('/reports')
     return render_template('add_report.html', form=form)
