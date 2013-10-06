@@ -25,6 +25,7 @@ Fields:
   <li><strong>{{field}}:</strong>{{attrs['type']}}{% if attrs['required'] %} <i>required</i>{% endif %}</li>
   {% endfor %}
 </ul>
+<a href="/reports/add?service_code={{service.service_code}}" class="btn btn-primary">Submit a new report</a>
 {% endfor %}
 </li>
 {% endblock %}
