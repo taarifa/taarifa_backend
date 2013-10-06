@@ -146,11 +146,6 @@ class AdvancedReport(BasicReport):
     service_name = 'advanced report'
     service_code = '0002'
 
-service_codes = {'wp001': Waterpoint,
-                 '0001': BasicReport,
-                 '0002': AdvancedReport,
-                 }
-
 
 class Role(db.Document, RoleMixin):
     name = db.StringField(max_length=80, unique=True)
@@ -170,7 +165,7 @@ def get_available_services():
 
 
 def get_service_class(service_code):
-    return service_codes.get(service_code, None)
+    return build_schema(Service.objects.get(service_code=service_code))
 
 
 def clear_database():
