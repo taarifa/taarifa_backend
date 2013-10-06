@@ -13,7 +13,7 @@ import _help
 
 logger = logging.getLogger(__name__)
 
-api = Blueprint("api", __name__)
+api = Blueprint("api", __name__, template_folder='templates')
 
 
 def get_services():
@@ -69,6 +69,11 @@ def receive_report():
         return jsonify({'Error': 'Validation Error'})
 
     return jsonify(_help.mongo_to_dict(doc))
+
+
+@api.route("/reports/add", methods=['GET'])
+def add_report():
+    return render_template('add_report.html', form=models.ReportForm())
 
 
 @api.route("/reports", methods=['GET'])
