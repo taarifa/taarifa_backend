@@ -101,56 +101,6 @@ class Report(db.Document):
 ReportForm = model_form(Report, exclude=['created_at'])
 
 
-class Waterpoint(Report):
-    # Duplication of ids because the waterpoint dataset already contains ids
-    waterpoint_id = db.StringField(required=True)
-    functional = db.BooleanField(required=True)
-
-    # potentially add a type field to describe the type of waterpoint reported
-    # on
-
-    metadata = Metadata('wp001', 'Waterpoint',
-                        'Location, description and functionality of waterpoint',
-                        'water')
-
-    # TODO: Unsure how to best handle the service code logic
-    service_code = db.StringField(default=metadata.service_code, required=True)
-
-    def __unicode__(self):
-        args = [self.latitude, self.longitude, self.functional, self.waterpoint_id]
-        return 'Waterpoint(%s)' % ', '.join(map(str, args))
-
-
-class BasicReport(Report):
-    title = db.StringField(max_length=255, required=True)
-    desc = db.StringField(required=False)
-
-    # TODO: Move the descriptive fields into a metadata dictionary/object
-    description = "Basic location based report"
-    keywords = ['basic', 'location', 'report']
-    group = 'location based reports'
-    service_name = 'basic report'
-    service_code = '0001'
-    protocol_type = None
-
-    meta = {'allow_inheritance': True}
-
-    def __unicode__(self):
-        args = [self.created_at, self.title, self.desc, self.latitude, self.longitude]
-        return ','.join(map(str, args))
-
-
-class AdvancedReport(BasicReport):
-    complicated_information = db.StringField(max_length=255, required=False)
-    advanced_stuff = db.StringField(required=False)
-    advanced_date = db.DateTimeField(required=False)
-
-    description = "Extension of the Basic Report"
-    keywords = ['advanced', 'cool', 'report', 'location']
-    service_name = 'advanced report'
-    service_code = '0002'
-
-
 class Role(db.Document, RoleMixin):
     name = db.StringField(max_length=80, unique=True)
     description = db.StringField(max_length=255)
