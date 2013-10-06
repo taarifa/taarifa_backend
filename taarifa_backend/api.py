@@ -59,7 +59,7 @@ def receive_report():
     post report to the backend
     """
     logger.debug('Report post received')
-    logger.debug('JSON: ' + request.json.__repr__())
+    logger.debug('JSON: %r' % request.json)
 
     # TODO: Deal with errors regarding a non existing service code
     service_code = request.json['service_code']
@@ -126,7 +126,7 @@ def create_admin():
     create an admin in the backend
     """
     logger.debug('New admin received')
-    logger.debug('JSON: ' + request.json.__repr__())
+    logger.debug('JSON: %r' % request.json)
 
     # TODO: Deal with errors regarding a non existing service code
     required = ["email", "password"]
