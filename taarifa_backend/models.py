@@ -97,7 +97,7 @@ class Report(db.Document):
 
     meta = {'allow_inheritance': True}
 
-ReportForm = model_form(Report)
+ReportForm = model_form(Report, exclude=['created_at'])
 
 
 class Waterpoint(Report):
