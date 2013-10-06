@@ -168,7 +168,14 @@ def get_available_services():
 
 
 def get_service_class(service_code):
-    return build_schema(Service.objects.get(service_code=service_code))
+    try:
+        return build_schema(Service.objects.get(service_code=service_code))
+    except Service.DoesNotExist:
+        return Report
+
+
+def get_form(service_code):
+    return model_form(get_service_class(service_code), exclude=['created_at'])
 
 
 def clear_database():
