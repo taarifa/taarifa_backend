@@ -34,7 +34,6 @@ def get_services():
                 'type': _help.db_type_to_string(f.__class__)
             }
         res['fields'] = fields
-        logger.debug(res)
         response[service.__name__] = res
     return response
 
@@ -60,9 +59,7 @@ def receive_report():
     # TODO: Handle errors if the report field is not available
     data = request.json['data']
     data.update(dict(service_code=service_code))
-    logger.debug(data.__repr__())
     db_obj = service_class(**data)
-    logger.debug(db_obj.__unicode__())
 
     try:
         doc = db_obj.save()
@@ -79,7 +76,6 @@ def receive_report():
 @crossdomain(origin='*')
 @jsonp
 def get_all_reports():
-    logger.debug(request.args.__repr__())
     service_code = request.args.get('service_code', None)
 
     service_class = models.get_service_class(
@@ -108,7 +104,6 @@ def create_service():
     logger.debug('JSON: %r' % request.json)
 
     db_obj = models.Service(**request.json)
-    logger.debug(db_obj)
 
     try:
         doc = db_obj.save()
