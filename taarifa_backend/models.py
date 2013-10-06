@@ -59,6 +59,7 @@ class Service(db.Document):
 
 
 def build_schema(service):
+    build_field = lambda d: fieldmap[d.pop('type')](**d)
     return type(str(service.name), (Reportable,),
                 dict(description=service.description,
                      group=service.group,
@@ -66,7 +67,7 @@ def build_schema(service):
                      protocol_type=service.protocol_type,
                      service_name=service.service_name,
                      service_code=service.service_code,
-                     **service.fields)
+                     **dict((k, build_field(v)) for k, v in service.fields.items()))
                 )
 
 
