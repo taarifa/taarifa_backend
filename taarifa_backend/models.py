@@ -1,6 +1,7 @@
 import datetime
 
 from flask.ext.security import RoleMixin, UserMixin
+from flask.ext.mongoengine.wtf import model_form
 
 from taarifa_backend import db
 
@@ -95,6 +96,8 @@ class Report(db.Document):
     longitude = db.FloatField(required=True)
 
     meta = {'allow_inheritance': True}
+
+ReportForm = model_form(Report)
 
 
 class Waterpoint(Report):
