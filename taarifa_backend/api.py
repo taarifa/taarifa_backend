@@ -2,7 +2,7 @@ import logging
 import json
 from pprint import pformat
 
-from flask import Blueprint, request, jsonify, render_template, make_response
+from flask import Blueprint, request, jsonify, render_template, make_response, redirect, flash
 from flask.ext.security import http_auth_required
 import mongoengine
 
@@ -71,9 +71,14 @@ def receive_report():
     return jsonify(_help.mongo_to_dict(doc))
 
 
-@api.route("/reports/add", methods=['GET'])
+@api.route("/reports/add", methods=['GET', 'POST'])
 def add_report():
-    return render_template('add_report.html', form=models.ReportForm())
+    service_code = request.args.get('service_code', None)
+    form = models.get_form(service_code)()
+    if form.validate_on_submit():
+        flash("Report successfully submitted!")
+        return redirect('/reports')
+    return render_template('add_report.html', form=form)
 
 
 @api.route("/reports", methods=['GET'])
@@ -82,13 +87,11 @@ def add_report():
 def get_all_reports():
     service_code = request.args.get('service_code', None)
 
-    service_class = models.get_service_class(
-        service_code) if service_code else models.Report
+    service_class = models.get_service_class(service_code)
 
-    all_reports = service_class.objects.all() if service_class else []
+    all_reports = service_class.objects.all()
 
-    result = map(_help.mongo_to_dict, all_reports)
-    return make_response(json.dumps(result))
+    return make_response(json.dumps(map(_help.mongo_to_dict, all_reports)))
 
 
 @api.route("/reports/<string:id>", methods=['GET'])
