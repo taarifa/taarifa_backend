@@ -60,7 +60,7 @@ class Service(db.Document):
 
 def build_schema(service):
     build_field = lambda d: fieldmap[d.pop('type')](**d)
-    return type(str(service.name), (Reportable,),
+    return type(str(service.name), (Report,),
                 dict(description=service.description,
                      group=service.group,
                      keywords=service.keywords,
@@ -88,7 +88,7 @@ class Metadata(object):
         return 'Metadata(%s)' % ', '.join(map(str, args))
 
 
-class Reportable(db.Document):
+class Report(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now, required=True)
 
     latitude = db.FloatField(required=True)
@@ -97,7 +97,7 @@ class Reportable(db.Document):
     meta = {'allow_inheritance': True}
 
 
-class Waterpoint(Reportable):
+class Waterpoint(Report):
     # Duplication of ids because the waterpoint dataset already contains ids
     waterpoint_id = db.StringField(required=True)
     functional = db.BooleanField(required=True)
@@ -117,7 +117,7 @@ class Waterpoint(Reportable):
         return 'Waterpoint(%s)' % ', '.join(map(str, args))
 
 
-class BasicReport(Reportable):
+class BasicReport(Report):
     title = db.StringField(max_length=255, required=True)
     desc = db.StringField(required=False)
 
@@ -169,5 +169,5 @@ def get_service_class(service_code):
 
 
 def clear_database():
-    for cls in [Reportable, Role, User]:
+    for cls in [Report, Role, User]:
         cls.drop_collection()

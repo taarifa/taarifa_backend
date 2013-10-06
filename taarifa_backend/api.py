@@ -7,7 +7,6 @@ from flask.ext.security import http_auth_required
 import mongoengine
 
 import models
-from models import BasicReport, Reportable
 from taarifa_backend import user_datastore
 from utils import crossdomain, jsonp
 import _help
@@ -79,7 +78,7 @@ def get_all_reports():
     service_code = request.args.get('service_code', None)
 
     service_class = models.get_service_class(
-        service_code) if service_code else Reportable
+        service_code) if service_code else models.Report
 
     all_reports = service_class.objects.all() if service_class else []
 
@@ -93,7 +92,7 @@ def get_all_reports():
 def get_report(id=False):
     # TODO: This is still using BasicReport, should be moved to service based
     # world
-    report = BasicReport.objects.with_id(id)
+    report = models.Report.objects.get(id=id)
     return jsonify(_help.mongo_to_dict(report))
 
 
