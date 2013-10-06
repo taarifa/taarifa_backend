@@ -1,6 +1,5 @@
 import logging
 import json
-from pprint import pformat
 
 from flask import Blueprint, request, jsonify, render_template, make_response, redirect, flash
 from flask.ext.security import http_auth_required
@@ -40,7 +39,7 @@ def get_services():
 
 @api.route("/")
 def landing():
-    return render_template('landing.html', services=pformat(get_services()))
+    return render_template('landing.html', services=get_services())
 
 
 @api.route("/reports", methods=['POST'])

@@ -7,9 +7,24 @@
   <li>GET <code>/reports</code> - Get a list of all reports</li>
   <li>GET <code>/reports/:report_id</code> - Get report with id <code>report_id</code></li>
   <li>GET <code>/services</code> - Get an overview of the services
-    <pre>
-      {{services}}
-    </pre>
-  </li>
 </ul>
+<h1>Services</h1>
+{% for name, service in services.items() %}
+<h2>{{name}}</h2>
+{{service.description}}
+<ul>
+  <li><strong>Group:</strong>{{service.group}}</li>
+  <li><strong>Keywords:</strong>{{', '.join(service.keywords)}}</li>
+  <li><strong>Protocol Type:</strong>{{service.protocol_type}}</li>
+  <li><strong>Service Code:</strong>{{service.service_code}}</li>
+  <li><strong>Service Name:</strong>{{service.service_name}}</li>
+</ul>
+Fields:
+<ul>
+  {% for field, attrs in service.fields.items() %}
+  <li><strong>{{field}}:</strong>{{attrs['type']}}{% if attrs['required'] %} <i>required</i>{% endif %}</li>
+  {% endfor %}
+</ul>
+{% endfor %}
+</li>
 {% endblock %}
