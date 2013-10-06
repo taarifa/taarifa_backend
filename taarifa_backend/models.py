@@ -68,6 +68,7 @@ def build_schema(service):
                      protocol_type=service.protocol_type,
                      service_name=service.service_name,
                      service_code=service.service_code,
+                     meta={'allow_inheritance': True},
                      **dict((k, build_field(v)) for k, v in service.fields.items()))
                 )
 
