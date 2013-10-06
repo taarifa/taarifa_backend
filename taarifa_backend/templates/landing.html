@@ -1,36 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Taarifa API</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <a class="brand" href="#">Taarifa API</a>
-        <ul class="nav">
-          <li class="active"><a href="/">Home</a></li>
-          <li><a href="/services">Services</a></li>
-          <li><a href="/reports">Reports</a></li>
-        </ul>
-        <ul class="nav pull-right">
-          <li><a href="https://github.com/taarifa/taarifa_backend">Source</a></li>
-          <li><a href="http://taarifa.org">Taarifa</a></li>
-        </ul>
-      </div>
-    </div>
-    <h1>Endpoints</h1>
-    <ul>
-      <li>POST <code>/reports</code> - Create a new report</li>
-      <li>GET <code>/reports</code> - Get a list of all reports</li>
-      <li>GET <code>/reports/:report_id</code> - Get report with id <code>report_id</code></li>
-      <li>GET <code>/services</code> - Get an overview of the services
-        <pre>
-          {{services}}
-        </pre>
-      </li>
-    </ul>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Endpoints</h1>
+<ul>
+  <li>POST <code>/reports</code> - Create a new report</li>
+  <li>GET <code>/reports</code> - Get a list of all reports</li>
+  <li>GET <code>/reports/:report_id</code> - Get report with id <code>report_id</code></li>
+  <li>GET <code>/services</code> - Get an overview of the services
+    <pre>
+      {{services}}
+    </pre>
+  </li>
+</ul>
+{% endblock %}
