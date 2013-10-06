@@ -165,7 +165,7 @@ class User(db.Document, UserMixin):
 
 
 def get_available_services():
-    return [BasicReport, AdvancedReport]
+    return [build_schema(o) for o in Service.objects]
 
 
 def get_service_class(service_code):

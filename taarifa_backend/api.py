@@ -21,29 +21,21 @@ def get_services():
     response = {}
 
     services = models.get_available_services()
-    for service_description in services:
-        logger.debug(service_description)
-        service_name = str(service_description.__name__)
-        logger.debug(service_name)
-
-        fields = service_description._fields
-        logger.debug(fields)
-
-        service = {}
-        field_dict = {}
-        for name, f in fields.iteritems():
+    for service in services:
+        res = dict((key, getattr(service, key, None))
+                   for key in ['protocol_type', 'keywords', 'service_name',
+                               'service_code', 'group', 'description'])
+        fields = {}
+        for name, f in service._fields.iteritems():
             if name in ['id', 'created_at']:
                 continue
-            field = {}
-            field['required'] = str(f.required)
-            field['type'] = _help.db_type_to_string(f.__class__)
-            field_dict[name] = field
-        service['fields'] = field_dict
-        for key in ['protocol_type', 'keywords', 'service_name',
-                    'service_code', 'group', 'description']:
-            service[key] = getattr(service_description, key)
-        logger.debug(service)
-        response[service_name] = service
+            fields[name] = {
+                'required': f.required,
+                'type': _help.db_type_to_string(f.__class__)
+            }
+        res['fields'] = fields
+        logger.debug(res)
+        response[service.__name__] = res
     return response
 
 
