@@ -101,6 +101,26 @@ def get_report(id=False):
     return jsonify(_help.mongo_to_dict(report))
 
 
+@api.route("/services", methods=['POST'])
+@crossdomain(origin='*', headers="Origin, X-Requested-With, Content-Type, Accept")
+def create_service():
+    logger.debug('Service post received')
+    logger.debug('JSON: %r' % request.json)
+
+    db_obj = models.Service(**request.json)
+    logger.debug(db_obj)
+
+    try:
+        doc = db_obj.save()
+    except mongoengine.ValidationError as e:
+        logger.debug(e)
+        # TODO: Send specification of the service used and a better error
+        # description
+        return jsonify({'Error': 'Validation Error'})
+
+    return jsonify(_help.mongo_to_dict(doc))
+
+
 @api.route("/services", methods=['GET'])
 @crossdomain(origin='*')
 @jsonp
