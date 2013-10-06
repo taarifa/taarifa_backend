@@ -84,7 +84,7 @@ def add_report():
         doc.save()
         flash("Report successfully submitted!")
         return redirect('/reports')
-    return render_template('add_report.html', form=form)
+    return render_template('add_report.html', form=form, report=service.__name__)
 
 
 @api.route("/reports", methods=['GET'])
