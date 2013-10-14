@@ -8,8 +8,7 @@ import mongoengine
 
 import models
 from taarifa_backend import user_datastore
-from utils import crossdomain, jsonp
-import _help
+from utils import crossdomain, jsonp, db_type_to_string, mongo_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ def get_services():
                 continue
             fields[name] = {
                 'required': f.required,
-                'type': _help.db_type_to_string(f.__class__)
+                'type': db_type_to_string(f.__class__)
             }
         res['fields'] = fields
         response[service.__name__] = res
@@ -68,7 +67,7 @@ def receive_report():
         # description
         return jsonify({'Error': 'Validation Error'})
 
-    return jsonify(_help.mongo_to_dict(doc))
+    return jsonify(mongo_to_dict(doc))
 
 
 @api.route("/reports/add", methods=['GET', 'POST'])
@@ -96,7 +95,7 @@ def get_all_reports():
 
     all_reports = service_class.objects.all()
 
-    return make_response(json.dumps(map(_help.mongo_to_dict, all_reports)))
+    return make_response(json.dumps(map(mongo_to_dict, all_reports)))
 
 
 @api.route("/reports/<string:id>", methods=['GET'])
@@ -106,7 +105,7 @@ def get_report(id=False):
     # TODO: This is still using BasicReport, should be moved to service based
     # world
     report = models.Report.objects.get(id=id)
-    return jsonify(_help.mongo_to_dict(report))
+    return jsonify(mongo_to_dict(report))
 
 
 @api.route("/services", methods=['POST'])
@@ -125,7 +124,7 @@ def create_service():
         # description
         return jsonify({'Error': 'Validation Error'})
 
-    return jsonify(_help.mongo_to_dict(doc))
+    return jsonify(mongo_to_dict(doc))
 
 
 @api.route("/services", methods=['GET'])
@@ -162,4 +161,4 @@ def create_admin():
     except mongoengine.ValidationError:
         return jsonify({'Error': 'Validation Error'})
 
-    return jsonify(_help.mongo_to_dict(user))
+    return jsonify(mongo_to_dict(user))
