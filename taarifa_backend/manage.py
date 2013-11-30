@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from flask.ext.script import Manager, Server
 
 from taarifa_backend import app
-from taarifa_backend.models import clear_database, Role, User
+from taarifa_backend.models import clear_database, Role, User, Service
 
 manager = Manager(app)
 
@@ -33,6 +33,31 @@ def setup(email, clean):
     _, created = User.objects.get_or_create(email=email, defaults={'roles': [role]})
     if not created:
         print "User with email address %s did already exist and was not created" % email
+
+
+@manager.command
+def create_services():
+    """Create default service types BasicReport and Waterpoint."""
+    Service(name="Generic",
+            fields={
+                "title": {"type": "StringField", "max_length": 255, "required": True},
+                "desc": {"type": "StringField", "required": True}
+            },
+            description="Generic location based report",
+            keywords=["location", "report"],
+            group="location",
+            service_name="basic report",
+            service_code="0001").save()
+    Service(name="Waterpoint",
+            fields={
+                "waterpoint_id": {"type": "StringField", "required": True},
+                "functional": {"type": "BooleanField", "required": True}
+            },
+            description="Location, description and functionality of a waterpoint",
+            keywords=["location", "report", "water"],
+            group="water",
+            service_name="waterpoint",
+            service_code="wp001").save()
 
 if __name__ == "__main__":
     manager.run()

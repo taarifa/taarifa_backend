@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "_forms.html" as forms %}
+
+{% block content %}
+<h1>Submit a {{report}} report</h1>
+<form method="post">
+  {{ forms.render(form) }}
+  <div class="actions">
+    <input type="submit" class="btn primary" value="Submit">
+  </div>
+</form>
+{% endblock %}

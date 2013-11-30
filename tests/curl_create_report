@@ -1,0 +1,10 @@
+#!/bin/sh
+curl -v -X POST -d '{
+  "service_code": "0001",
+  "data": {
+    "longitude": 3.42,
+    "latitude": 3.12121,
+    "title": "test",
+    "desc": "just a test"
+  }
+}' -H "Content-Type: application/json" localhost:5000/reports
