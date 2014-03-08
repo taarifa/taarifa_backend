@@ -9,16 +9,17 @@ function loadMap(){
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+  var markers = L.markerClusterGroup();
+
   function addWaterPoint(waterpoint) {
-    L.marker([waterpoint.latitude,waterpoint.longitude]).addTo(map)
-      .bindPopup(waterpoint);
+    markers.addLayer(L.marker([waterpoint.latitude,waterpoint.longitude]));
   }
+  map.addLayer(markers);
 
   $.getJSON( "/reports", function( data ) {
     var items = [];
 
-    //to load all of the data points, remove the '.slice(x,y)
-    data.slice(0,100).forEach( function (waterpoint, index) {
+    data.forEach( function (waterpoint, index) {
       addWaterPoint(waterpoint);
     });
   });
