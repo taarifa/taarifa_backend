@@ -48,3 +48,6 @@ class TaarifaTest(unittest.TestCase):
         for auth in [None, ("foo", "bar")]:
             self._create_admin(self.data, requests.codes.unauthorized, 0,
                                auth=auth)
+
+if __name__ == '__main__':
+    unittest.main()
