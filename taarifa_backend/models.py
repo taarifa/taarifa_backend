@@ -4,38 +4,15 @@ from flask.ext.security import RoleMixin, UserMixin
 from flask.ext.mongoengine.wtf import model_form
 
 from taarifa_backend import db
-
-fieldmap = {
-    'BinaryField': db.BinaryField,
-    'BooleanField': db.BooleanField,
-    'ComplexDateTimeField': db.ComplexDateTimeField,
-    'DateTimeField': db.DateTimeField,
-    'DecimalField': db.DecimalField,
-    'DictField': db.DictField,
-    'DynamicField': db.DynamicField,
-    'EmailField': db.EmailField,
-    'EmbeddedDocumentField': db.EmbeddedDocumentField,
-    'FileField': db.FileField,
-    'FloatField': db.FloatField,
-    'GenericEmbeddedDocumentField': db.GenericEmbeddedDocumentField,
-    'GenericReferenceField': db.GenericReferenceField,
-    'GeoPointField': db.GeoPointField,
-    'ImageField': db.ImageField,
-    'IntField': db.IntField,
-    'ListField': db.ListField,
-    'MapField': db.MapField,
-    'ObjectIdField': db.ObjectIdField,
-    'ReferenceField': db.ReferenceField,
-    'SequenceField': db.SequenceField,
-    'SortedListField': db.SortedListField,
-    'StringField': db.StringField,
-    'URLField': db.URLField,
-    'UUIDField': db.UUIDField,
-}
+from taarifa_backend.utils import get_mongoengine_class, fieldmap
 
 
-class Field(db.EmbeddedDocument):
-    """Field in a :class:`Service`."""
+class ReportField(db.EmbeddedDocument):
+    """Description of a field in a report"""
+    # TODO: must be a python field name, check or always correct this
+    name = db.StringField(required=True)
+    fieldtype = db.StringField(required=True, choices=fieldmap.keys())
+    # mongoengine properties of a Field
     db_field = db.StringField(default=None)
     required = db.BooleanField(default=False)
     default = db.DynamicField(default=None)
@@ -48,49 +25,39 @@ class Field(db.EmbeddedDocument):
 
 
 class Service(db.Document):
-    """A service schema served by the API."""
-    name = db.StringField(required=True)
-    fields = db.DictField(required=True)
+    """A service schema served by the API.
+
+    Describes the fields and validations of a certain type of report
+    """
+    # Must be a valid python class name
+    # TODO: Have to check or correct this
+    classname = db.StringField(required=True)
+    service_name = db.StringField(required=True)
+    service_code = db.StringField(required=True, unique=True)
+    fields = db.ListField(field=db.EmbeddedDocumentField(ReportField))
     description = db.StringField()
     group = db.StringField()
     keywords = db.ListField(db.StringField())
     protocol_type = db.StringField()
-    service_name = db.StringField(required=True)
-    service_code = db.StringField(required=True, unique=True)
+
+
+def create_db_field(field):
+    """creates a mongoengine field from the description contained in a :class:`ReportField`"""
+    _class = get_mongoengine_class(field.fieldtype)
+    return _class(db_field=field.db_field, required=field.required, default=field.default,
+                  unique=field.unique, unique_with=field.unique_with,
+                  primary_key=field.primary_key, choices=field.choices,
+                  help_text=field.help_text, verbose_name=field.verbose_name)
 
 
 def build_schema(service):
-    build_field = lambda d: fieldmap[d.pop('type')](**d)
-    return type(str(service.name), (Report,),
-                dict(description=service.description,
-                     group=service.group,
-                     keywords=service.keywords,
-                     protocol_type=service.protocol_type,
-                     service_name=service.service_name,
-                     service_code=service.service_code,
-                     meta={'allow_inheritance': True},
-                     **dict((k, build_field(v)) for k, v in service.fields.items()))
-                )
-
-
-class Metadata(object):
-
-    """
-    Description of a service
-    """
-
-    def __init__(self, service_code, service_name, description, group=None):
-        self.service_code = service_code
-        self.service_name = service_name
-        self.description = description
-        self.group = group
-
-    def __repr__(self):
-        args = [self.service_code, self.service_name, self.description, self.group]
-        return 'Metadata(%s)' % ', '.join(map(str, args))
+    """dynamically creates the :class:`Report` for the given :class:`Service`"""
+    fields = dict([(f.name, create_db_field(f)) for f in service.fields])
+    return type(str(service.classname), (Report, ), fields)
 
 
 class Report(db.Document):
+    """base class used for all created Reports"""
     created_at = db.DateTimeField(default=datetime.datetime.now, required=True)
 
     latitude = db.FloatField(required=True)

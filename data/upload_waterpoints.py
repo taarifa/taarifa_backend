@@ -49,22 +49,22 @@ def parse_csv(csv_fn):
 
 def create_wp_service():
     headers = {'content-type': 'application/json'}
-    data = {'name': 'WaterpointService',
-            'fields': {'waterpoint_id': {'type': 'StringField', 'required': True},
-                       'region': {'type': 'StringField', 'required': True},
-                       'lga_name': {'type': 'StringField', 'required': True},
-                       'ward': {'type': 'StringField', 'required': True},
-                       'village': {'type': 'StringField', 'required': True},
-                       'technology_in_use': {'type': 'StringField', 'required': True},
-                       'waterpoint': {'type': 'StringField', 'required': True},
-                       'status': {'type': 'StringField', 'required': True},
-                       'latitude': {'type': 'FloatField', 'required': True},
-                       'longitude': {'type': 'FloatField', 'required': True},
-                       },
+    data = {'classname': 'WaterpointService',
+            'fields': [{'name': 'waterpoint_id', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'region', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'lga_name', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'ward', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'village', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'technology_in_use', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'waterpoint', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'status', 'fieldtype': 'StringField', 'required': True},
+                       {'name': 'latitude', 'fieldtype': 'FloatField', 'required': True},
+                       {'name': 'longitude', 'fieldtype': 'FloatField', 'required': True},
+                       ],
             'group': 'location based reports',
             'keywords': ['waterpoints'],
             'protocol_type': '',
-            'service_name': '',
+            'service_name': 'Waterpoint',
             'service_code': 'wp1'
             }
     requests.post(SERVICES_URL, data=json.dumps(data), headers=headers)

@@ -5,46 +5,45 @@ from flask import make_response, request, current_app
 
 from taarifa_backend import db
 
-db_type_to_name = {
-    db.DateTimeField: 'DateTime',
-    db.StringField: 'String',
-    db.FloatField: 'Float'
+fieldmap = {
+    'BinaryField': db.BinaryField,
+    'BooleanField': db.BooleanField,
+    'ComplexDateTimeField': db.ComplexDateTimeField,
+    'DateTimeField': db.DateTimeField,
+    'DecimalField': db.DecimalField,
+    'DictField': db.DictField,
+    'DynamicField': db.DynamicField,
+    'EmailField': db.EmailField,
+    'EmbeddedDocumentField': db.EmbeddedDocumentField,
+    'FileField': db.FileField,
+    'FloatField': db.FloatField,
+    'GenericEmbeddedDocumentField': db.GenericEmbeddedDocumentField,
+    'GenericReferenceField': db.GenericReferenceField,
+    'GeoPointField': db.GeoPointField,
+    'ImageField': db.ImageField,
+    'IntField': db.IntField,
+    'ListField': db.ListField,
+    'MapField': db.MapField,
+    'ObjectIdField': db.ObjectIdField,
+    'ReferenceField': db.ReferenceField,
+    'SequenceField': db.SequenceField,
+    'SortedListField': db.SortedListField,
+    'StringField': db.StringField,
+    'URLField': db.URLField,
+    'UUIDField': db.UUIDField,
 }
 
 
-def db_type_to_string(db_type):
-    return db_type_to_name.get(db_type, 'Unknown')
+def get_mongoengine_class(fieldtype):
+    """gets the associated class reference for the string"""
+    return fieldmap[fieldtype]
 
 
-# After http://stackoverflow.com/a/14025561/396967
-def mongo_to_dict(obj):
-    return_data = []
-
-    if isinstance(obj, db.Document):
-        return_data.append(("id", str(obj.id)))
-
-    for field_name in obj._fields:
-
-        if field_name in ("id",):
-            continue
-
-        data = obj._data[field_name]
-
-        if data:
-            if isinstance(obj._fields[field_name], db.DateTimeField):
-                return_data.append((field_name, str(data.isoformat())))
-            elif isinstance(obj._fields[field_name], db.StringField):
-                return_data.append((field_name, str(data)))
-            elif isinstance(obj._fields[field_name], db.FloatField):
-                return_data.append((field_name, float(data)))
-            elif isinstance(obj._fields[field_name], db.IntField):
-                return_data.append((field_name, int(data)))
-            elif isinstance(obj._fields[field_name], db.ListField):
-                return_data.append((field_name, data))
-            elif isinstance(obj._fields[field_name], db.EmbeddedDocumentField):
-                return_data.append((field_name, mongo_to_dict(data)))
-
-    return dict(return_data)
+def mongoengine_class_to_string(_class):
+    for k, v in fieldmap.iteritems():
+        if v == _class:
+            return k
+    return 'Unknown'
 
 
 def crossdomain(origin=None, methods=None, headers=None,

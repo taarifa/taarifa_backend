@@ -11,10 +11,10 @@ def get_all_reports():
     print response.url
     print response.ok
 
-    data = json.loads(response.text)
-    reports = data['result']
-    print reports[0]
-    print len(reports)
+    reports = json.loads(response.text)
+    for r in reports:
+        print r
+    print 'Total %s reports' % len(reports)
 
 if __name__ == '__main__':
     get_all_reports()

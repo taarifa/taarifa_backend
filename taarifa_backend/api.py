@@ -1,18 +1,20 @@
-import logging
-import json
-
-from flask import Blueprint, request, jsonify, render_template, make_response, redirect, flash
+from flask import Blueprint, request, jsonify, render_template, redirect, flash
 from flask.ext.security import http_auth_required
 from flask.ext.mongoengine.wtf import model_form
 import mongoengine
 
 import models
-from taarifa_backend import user_datastore
-from utils import crossdomain, jsonp, db_type_to_string, mongo_to_dict
+from taarifa_backend import user_datastore, app
+from utils import crossdomain, jsonp, mongoengine_class_to_string
 
-logger = logging.getLogger(__name__)
+logger = app.logger
 
 api = Blueprint("api", __name__, template_folder='templates')
+
+
+def __json_response(document):
+    """creates an response object with the document included as json"""
+    return app.response_class(document.to_json(), mimetype='application/json')
 
 
 def get_services():
@@ -21,15 +23,16 @@ def get_services():
     services = models.get_available_services()
     for service in services:
         res = dict((key, getattr(service, key, None))
-                   for key in ['protocol_type', 'keywords', 'service_name',
+                   for key in ['protocol_type', 'service_name',
                                'service_code', 'group', 'description'])
+        res['keywords'] = getattr(service, 'keywords', [])
         fields = {}
         for name, f in service._fields.iteritems():
             if name in ['id', 'created_at']:
                 continue
             fields[name] = {
                 'required': f.required,
-                'type': db_type_to_string(f.__class__)
+                'type': mongoengine_class_to_string(f.__class__)
             }
         res['fields'] = fields
         response[service.__name__] = res
@@ -61,7 +64,7 @@ def receive_report():
 
     # TODO: Handle errors if the report field is not available
     data = request.json['data']
-    data.update(dict(service_code=service_code))
+    data['service_code'] = service_code
     db_obj = service_class(**data)
 
     try:
@@ -70,9 +73,9 @@ def receive_report():
         logger.debug(e)
         # TODO: Send specification of the service used and a better error
         # description
-        return jsonify({'Error': 'Validation Error'})
+        return jsonify(Error='Validation Error')
 
-    return jsonify(mongo_to_dict(doc))
+    return __json_response(doc)
 
 
 @api.route("/reports/add", methods=['GET', 'POST'])
@@ -95,22 +98,22 @@ def add_report():
 @jsonp
 def get_all_reports():
     service_code = request.args.get('service_code', None)
+    logger.debug('Received request for service_code=%s', service_code)
 
     service_class = models.get_service_class(service_code)
 
     all_reports = service_class.objects.all()
 
-    return make_response(json.dumps(map(mongo_to_dict, all_reports)))
+    return __json_response(all_reports)
 
 
 @api.route("/reports/<string:id>", methods=['GET'])
 @crossdomain(origin='*')
 @jsonp
 def get_report(id=False):
-    # TODO: This is still using BasicReport, should be moved to service based
-    # world
+    logger.debug('Received request for report: %s' % id)
     report = models.Report.objects.get(id=id)
-    return jsonify(mongo_to_dict(report))
+    return __json_response(report)
 
 
 @api.route("/services", methods=['POST'])
@@ -119,7 +122,10 @@ def create_service():
     logger.debug('Service post received')
     logger.debug('JSON: %r' % request.json)
 
-    db_obj = models.Service(**request.json)
+    fields = request.json.pop('fields')
+    report_fields = [models.ReportField(**field) for field in fields]
+
+    db_obj = models.Service(fields=report_fields, **request.json)
 
     try:
         doc = db_obj.save()
@@ -127,16 +133,15 @@ def create_service():
         logger.debug(e)
         # TODO: Send specification of the service used and a better error
         # description
-        return jsonify({'Error': 'Validation Error'})
-
-    return jsonify(mongo_to_dict(doc))
+        return jsonify(Error='Validation Error')
+    return __json_response(doc)
 
 
 @api.route("/services", methods=['GET'])
 @crossdomain(origin='*')
 @jsonp
 def get_list_of_all_services():
-    # TODO: factor out the transformation from a service to json
+    logger.debug('Request for service list received')
     return jsonify(**get_services())
 
 
@@ -155,8 +160,8 @@ def create_admin():
     required = ["email", "password"]
     missing = list(set(required) - set(request.json.keys()))
     if missing:
-        response = jsonify({"Error": "Validation Error",
-                            "Missing": missing})
+        response = jsonify(Error="Validation Error",
+                           Missing=missing)
         response.status_code = 422
         return response
 
@@ -164,6 +169,6 @@ def create_admin():
         user = user_datastore.create_user(email=request.json["email"],
                                           password=request.json["password"])
     except mongoengine.ValidationError:
-        return jsonify({'Error': 'Validation Error'})
+        return jsonify(Error='Validation Error')
 
-    return jsonify(mongo_to_dict(user))
+    return __json_response(user)

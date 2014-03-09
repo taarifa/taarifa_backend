@@ -7,10 +7,14 @@ from taarifa_backend import app, db
 from taarifa_backend.models import User
 from taarifa_backend.api import user_datastore
 
+TEST_DB = 'taarifa_backend_test'
+
 
 class TaarifaTest(unittest.TestCase):
 
     def setUp(self):
+        configured_db = app.config['MONGODB_SETTINGS']['db']
+        assert configured_db == TEST_DB, 'Expected to use %s as a db, but was configured to use %s' % (TEST_DB, configured_db)
         app.config['TESTING'] = True
         self.app = app.test_client()
         self.data = {"email": "taarifa_test@example.com",
@@ -18,7 +22,7 @@ class TaarifaTest(unittest.TestCase):
         user_datastore.create_user(email="username", password="password")
 
     def tearDown(self):
-        db.connection.drop_database(app.config['MONGODB_SETTINGS']['db'])
+        db.connection.drop_database(TEST_DB)
 
     def _create_admin(self, data, expected_response_code, expected_increment,
                       auth=("username", "password")):
