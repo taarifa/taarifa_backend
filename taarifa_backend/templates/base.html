@@ -28,32 +28,44 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Taarifa API</a>
+          <a class="navbar-brand" href="/">Taarifa API</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-              <li><a href="/services">Services</a></li>
-            <li><a href="/reports">Reports</a></li>
-            <li><a onclick="loadMap()">Map</a></li>
-            <li><a href="https://github.com/taarifa/taarifa_backend">Source</a></li>
-            <li><a href="http://taarifa.org">Taarifa</a></li>
+
+           <li {% if request.path == "/" %}class="active"{% endif %}>
+            <a href="/">Home</a>
+           </li>
+           <li {% if request.path=="/services" %}class="active"{% endif %}>
+            <a href="/services">Services</a>
+           </li>
+           <li {% if request.path == "/reports" %}class="active"{% endif %}>
+           <a href="#">Reports</a>
+            </li>
+           <li {% if request.path=="/map" %}class="active"{% endif %}>
+            <a href="/map">Map</a>
+           </li>
+           <li><a href="https://github.com/taarifa/taarifa_backend">Source</a></li>
+           <li><a href="http://taarifa.org">Taarifa</a></li>
+
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
-    <div id="home">
-    {% block content %}{% endblock %}
-    </div>
-
-    <div id="mapcontainer">
-      <div id="map" top-padding=65px style="width: 100%; height: 750px"></div>
-    </div>
+    {% block content %}
+    {% endblock %}
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
     <script src="http://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
     <script src="static/base.js"></script>
+
+    <script>
+        $( document ).ready(function() {
+            {% block jsOnload %}
+            {% endblock %}
+        });
+    </script>
   </body>
 </html>
