@@ -2,3 +2,15 @@ body {
   padding-top: 50px;
   padding-left: 10px;
 }
+
+.all-broken-cluster {
+    background-color: red;
+}
+
+.all-fixed-cluster {
+    background-color: blue;
+}
+
+.mixed-cluster {
+    background-color: red;
+}

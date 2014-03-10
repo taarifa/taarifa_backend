@@ -6,7 +6,27 @@ function loadMap(){
       attribution: '(c) OpenStreetMap contributors'
   }).addTo(map);
 
-  var markers = L.markerClusterGroup();
+  //leaflet clustering plugin with control over what the clustering icon looks like
+  var markers = new L.MarkerClusterGroup({
+    iconCreateFunction: function(cluster) {
+      var children = cluster.getAllChildMarkers();
+      var childCount = cluster.getChildCount();
+
+      //TODO loop over the children and determine the status of the cluster
+
+      //Using std divicon but could use something else
+      return new L.DivIcon({
+        html: '<div><span>' + childCount + '</span></div>',
+
+             //TODO use all-broken-cluster, all-fixed-cluster, or mixed-cluster here depending on the status of the child waterpoints
+             //even better: single class with interpolation over the colour
+
+             className: 'leaflet-marker-icon marker-cluster marker-cluster-medium leaflet-zoom-animated leaflet-clickable',
+             iconSize: new L.Point(40, 40)
+      });
+    }
+  });
+
   map.addLayer(markers);
 
   function addWaterPoint(waterpoint) {
