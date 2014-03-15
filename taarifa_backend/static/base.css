@@ -3,14 +3,18 @@ body {
   padding-left: 10px;
 }
 
-.all-broken-cluster {
+.broken-cluster {
     background-color: red;
 }
 
-.all-fixed-cluster {
+.fixed-cluster {
     background-color: blue;
 }
 
-.mixed-cluster {
-    background-color: red;
+.inprog-cluster {
+    background-color: green;
+}
+
+.unknown-cluster {
+    background-color: orange;
 }
