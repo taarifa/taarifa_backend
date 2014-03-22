@@ -9,4 +9,4 @@ services: mongodb
 # command to run tests
 script:
   - "flake8"
-  - "nosetests"
+  - "./run_tests.sh"
