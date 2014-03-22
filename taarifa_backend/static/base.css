@@ -1,0 +1,20 @@
+body {
+  padding-top: 50px;
+  padding-left: 10px;
+}
+
+.broken-cluster {
+    background-color: red;
+}
+
+.fixed-cluster {
+    background-color: blue;
+}
+
+.inprog-cluster {
+    background-color: green;
+}
+
+.unknown-cluster {
+    background-color: orange;
+}

@@ -41,6 +41,11 @@ def landing():
     return render_template('landing.html', services=get_services())
 
 
+@api.route("/map")
+def carto():
+    return render_template('map.html')
+
+
 @api.route("/reports", methods=['POST'])
 @crossdomain(origin='*', headers="Origin, X-Requested-With, Content-Type, Accept")
 def receive_report():

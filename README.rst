@@ -3,7 +3,7 @@ Taarifa Backend
 
 |Build Status|
 
-Prototype of a Taarifa backend
+Prototype of a Taarifa backend, now with an added map functionality!
 
 Installation
 ------------
