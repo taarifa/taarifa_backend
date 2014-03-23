@@ -13,8 +13,6 @@ SERVICE_URL = '/services'
 SERVICE_CODE = "test0001"
 SUCESS = '200 OK'
 
-HEADERS = {'content-type': 'application/json'}
-
 SERVICE_DESC = {"classname": "TestReport",
                 "fields": [{"name": "title", "fieldtype": "StringField", "max_length": 255, "required": True},
                            {"name": "desc", "fieldtype": "StringField", "required": True}],
@@ -61,7 +59,7 @@ class ApiTest(unittest.TestCase):
         self._get_all_reports()
 
     def _create_service(self):
-        result = self.app.post(SERVICE_URL, data=json.dumps(SERVICE_DESC), headers=HEADERS)
+        result = self.app.post(SERVICE_URL, data=json.dumps(SERVICE_DESC), content_type='application/json')
         self._check_status_and_log(result)
 
     def _query_services(self):
@@ -69,7 +67,7 @@ class ApiTest(unittest.TestCase):
         self._check_status_and_log(result)
 
     def _post_report(self):
-        result = self.app.post(REPORTS_URL, data=json.dumps(REPORT_DATA), headers=HEADERS)
+        result = self.app.post(REPORTS_URL, data=json.dumps(REPORT_DATA), content_type='application/json')
         self._check_status_and_log(result)
         return json.loads(result.data)['_id']['$oid']
 

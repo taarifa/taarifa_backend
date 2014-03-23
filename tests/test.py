@@ -27,10 +27,11 @@ class TaarifaTest(unittest.TestCase):
     def _create_admin(self, data, expected_response_code, expected_increment,
                       auth=("username", "password")):
         user_count = User.objects().count()
-        headers = {"content-type": "application/json"}
+        headers = None
         if auth:
-            headers["Authorization"] = "Basic " + b64encode(':'.join(auth))
-        r = self.app.post("/admin", data=json.dumps(data), headers=headers)
+            headers = {"Authorization": "Basic " + b64encode(':'.join(auth))}
+        r = self.app.post("/admin", data=json.dumps(data), headers=headers,
+                          content_type="application/json")
         self.assertEquals(expected_response_code, r.status_code)
         self.assertEquals(user_count + expected_increment,
                           User.objects().count())
