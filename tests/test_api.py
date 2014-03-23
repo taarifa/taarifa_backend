@@ -5,7 +5,7 @@ if __name__ == '__main__':
     os.environ['DBNAME'] = TEST_DB
 
 import json
-import taarifa_backend
+from taarifa_backend import app, db
 import unittest
 
 REPORTS_URL = '/reports'
@@ -31,7 +31,7 @@ REPORT_DATA = {'service_code': SERVICE_CODE,
                         }
                }
 
-logger = taarifa_backend.app.logger
+logger = app.logger
 
 
 class ApiTest(unittest.TestCase):
@@ -39,13 +39,13 @@ class ApiTest(unittest.TestCase):
     def setUp(self):
         # Somehow it is not so easy to find out which database is used
         # this assert at least makes sure the app config is set to the test_db
-        configured_db = taarifa_backend.app.config['MONGODB_SETTINGS']['db']
+        configured_db = app.config['MONGODB_SETTINGS']['db']
         assert configured_db == TEST_DB, 'Expected to use %s as a db, but was configured to use %s' % (TEST_DB, configured_db)
-        taarifa_backend.app.config['TESTING'] = True
-        self.app = taarifa_backend.app.test_client()
+        app.testing = True
+        self.app = app.test_client()
 
     def tearDown(self):
-        taarifa_backend.db.connection.drop_database(TEST_DB)
+        db.connection.drop_database(TEST_DB)
 
     def test_call_landing_page(self):
         self.app.post('/')
