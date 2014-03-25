@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container">
 <h1>API Endpoints</h1>
 <ul>
   <li>POST <code>/reports</code> - Create a new report</li>
@@ -29,4 +30,5 @@ Fields:
 <a href="/reports/add?service_code={{service.service_code}}" class="btn btn-primary">Submit a new report</a>
 {% endfor %}
 </li>
+</div>
 {% endblock %}
