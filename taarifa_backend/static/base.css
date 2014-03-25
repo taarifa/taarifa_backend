@@ -17,3 +17,8 @@ body {
 .unknown-cluster {
     background-color: orange;
 }
+
+#map {
+  width: 100%;
+  height: 750px;
+}
