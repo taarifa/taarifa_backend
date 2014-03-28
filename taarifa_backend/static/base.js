@@ -5,6 +5,7 @@ waterpointMarker = L.Marker.extend({
 });
 
 function loadMap() {
+    $('#map').height($(window).height() - 50);
     var map = L.map('map').setView([-6.3153, 35.15625], 6);
 
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -89,3 +90,7 @@ function loadMap() {
         });
     });
 }
+
+$(window).resize(function() {
+  $('#map').height($(window).height() - 50);
+});
