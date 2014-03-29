@@ -8,43 +8,15 @@ REPORTS_URL = 'http://localhost:5000/reports'
 SERVICES_URL = 'http://localhost:5000/services'
 
 
-#simple enum from http://stackoverflow.com/questions/36932/how-can-i-represent-an-enum-in-python
-def enum(*sequential, **named):
-    enums = dict(zip(sequential, range(len(sequential))), **named)
-    reverse = dict((value, key) for key, value in enums.iteritems())
-    enums['reverse_mapping'] = reverse
-    return type('Enum', (), enums)
-
-
-Status = enum(FUNCTIONAL='functional',
-              NOT_FUNCTIONAL='not functional',
-              IN_PROGRESS='in progress',
-              UNKNOWN='unknown')
-
-
-class Waterpoint(object):
-    #TODO worth it to go through a class?
-    def __init__(self, _id, region, lga, ward, village, tech, wptype, status, lat, lon):
-        self.waterpoint_id = str(_id)
-        self.region = region
-        self.lga_name = lga
-        self.ward = ward
-        self.village = village
-        self.technology_in_use = tech
-        self.waterpoint = wptype
-        self.status = status
-        self.latitude = lat
-        self.longitude = lon
-
-    def __repr__(self):
-        return 'Waterpoint(%s, %s, %s, %s)' % (self.waterpoint_id, self.latitude, self.longitude,
-                                               self.status)
+class Status(object):
+    FUNCTIONAL, NOT_FUNCTIONAL, IN_PROGRESS, UNKNOWN = range(4)
 
 
 def resolve_status(status):
-    if status.lower() == "functional":
+    if status.lower().startswith("functional"):
         return Status.FUNCTIONAL
-    elif status.lower() == "not functional":
+    elif status.lower().startswith("not functional") or \
+            status.lower().startswith("non functional"):
         return Status.NOT_FUNCTIONAL
     elif status.lower() == "in progress":
         return Status.IN_PROGRESS
@@ -54,21 +26,22 @@ def resolve_status(status):
 
 def parse_csv(csv_fn):
     waterpoints = []
-    with open(csv_fn, 'r') as _file:
-        reader = csv.reader(_file)
-        header = reader.next()
+    with open(csv_fn, 'r') as f:
+        reader = csv.reader(f)
+        header = [field.lower().replace(' ', '_')
+                  for field in reader.next()]
         for _id, row in enumerate(reader):
-            d = dict(zip(header, row))
-
-            status = resolve_status(d['STATUS'])
+            wp = dict(zip(header, row))
+            wp['waterpoint_id'] = _id
+            wp['status'] = resolve_status(wp['status'])
 
             try:
-                lat, lon = float(d['LATITUDE']), float(d['LONGITUDE'])
+                wp['latitude'] = float(wp['latitude'])
+                wp['longitude'] = float(wp['longitude'])
             except ValueError:
-                #TODO log error
+                # TODO log error
                 continue
 
-            wp = Waterpoint(_id, *(row[:-3] + [status, lat, lon]))
             waterpoints.append(wp)
 
     return waterpoints
@@ -99,7 +72,7 @@ def create_wp_service():
 
 def send_report(wp):
     headers = {'content-type': 'application/json'}
-    data = {'service_code': 'wp1', 'data': wp.__dict__}
+    data = {'service_code': 'wp1', 'data': wp}
 
     requests.post(REPORTS_URL, data=json.dumps(data), headers=headers)
 
