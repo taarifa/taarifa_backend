@@ -6,7 +6,7 @@ from wsgiref.handlers import format_date_time
 
 from flask.ext.script import Manager, Server
 
-from api import api, add_document
+from api import api, add_document, delete_documents
 
 manager = Manager(api)
 
@@ -177,6 +177,12 @@ def upload_waterpoints(filename):
             d = dict((k, convert.get(k, str)(v)) for k, v in d.items() if v)
             d['facility_code'] = 'wp001'
             check(add_document('waterpoints', d))
+
+
+@manager.command
+def delete_waterpoints():
+    """Delete all existing waterpoints."""
+    print delete_documents('waterpoints')
 
 if __name__ == "__main__":
     manager.run()
