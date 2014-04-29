@@ -1,6 +1,6 @@
 from flask.ext.script import Manager, Server
 
-from api import api
+from api import api, add_document
 
 manager = Manager(api)
 
@@ -132,6 +132,24 @@ waterpoint_schema = {
         'type': 'float',
     },
 }
+
+
+def check(response):
+    assert response.status_code == 201, response.data
+    print response.data
+
+
+@manager.command
+def create_waterpoints():
+    """Create facility for waterpoints."""
+    check(add_document('facilities',
+                       {'facility_code': "wp001",
+                        'facility_name': "Waterpoint",
+                        'fields': waterpoint_schema,
+                        'description': "A waterpoint in Tanzania",
+                        'keywords': ["location", "water", "infrastructure"],
+                        'group': "water",
+                        'endpoint': "waterpoints"}))
 
 if __name__ == "__main__":
     manager.run()
