@@ -1,3 +1,9 @@
+from csv import DictReader
+from datetime import datetime
+import gzip
+from time import mktime
+from wsgiref.handlers import format_date_time
+
 from flask.ext.script import Manager, Server
 
 from api import api, add_document
@@ -150,6 +156,27 @@ def create_waterpoints():
                         'keywords': ["location", "water", "infrastructure"],
                         'group': "water",
                         'endpoint': "waterpoints"}))
+
+
+@manager.option("filename", help="gzipped CSV file to upload (required)")
+def upload_waterpoints(filename):
+    """Upload waterpoints from a gzipped CSV file."""
+    ft = lambda s, fmt: format_date_time(mktime(datetime.strptime(s, fmt).timetuple()))
+    convert = {
+        'date_recorded': lambda s: ft(s, '%m/%d/%Y'),
+        'population': int,
+        'construction_year': lambda s: ft(s, '%Y'),
+        'breakdown_year': lambda s: ft(s, '%Y'),
+        'amount_tsh': float,
+        'gps_height': float,
+        'latitude': float,
+        'longitude': float,
+    }
+    with gzip.open(filename) as f:
+        for d in DictReader(f):
+            d = dict((k, convert.get(k, str)(v)) for k, v in d.items() if v)
+            d['facility_code'] = 'wp001'
+            check(add_document('waterpoints', d))
 
 if __name__ == "__main__":
     manager.run()
