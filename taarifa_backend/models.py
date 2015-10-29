@@ -49,6 +49,8 @@ class Field(db.EmbeddedDocument):
 
 class Service(db.Document):
     """A service schema served by the API."""
+    meta = {'strict': False}
+
     name = db.StringField(required=True)
     fields = db.DictField(required=True)
     description = db.StringField()
