@@ -25,7 +25,7 @@ def get_services():
                                'service_code', 'group', 'description'])
         fields = {}
         for name, f in service._fields.iteritems():
-            if name in ['id', 'created_at']:
+            if name in ['id', 'created_at', '_cls']:
                 continue
             fields[name] = {
                 'required': f.required,
