@@ -98,7 +98,7 @@ class Report(db.Document):
     latitude = db.FloatField(required=True)
     longitude = db.FloatField(required=True)
 
-    meta = {'allow_inheritance': True}
+    meta = {'allow_inheritance': True, 'strict': False}
 
 ReportForm = model_form(Report, exclude=['created_at'])
 
