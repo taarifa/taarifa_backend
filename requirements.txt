@@ -1,3 +1,4 @@
+email_validator
 flake8
 Flask
 Flask-Script
