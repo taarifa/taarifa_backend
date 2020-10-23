@@ -1,7 +1,7 @@
 import datetime
 
-from flask.ext.security import RoleMixin, UserMixin
-from flask.ext.mongoengine.wtf import model_form
+from flask_security import RoleMixin, UserMixin
+from flask_mongoengine.wtf import model_form
 
 from taarifa_backend import db
 

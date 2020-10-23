@@ -2,8 +2,8 @@ import logging
 import json
 
 from flask import Blueprint, request, jsonify, render_template, make_response, redirect, flash
-from flask.ext.security import http_auth_required
-from flask.ext.mongoengine.wtf import model_form
+from flask_security import http_auth_required
+from flask_mongoengine.wtf import model_form
 import mongoengine
 
 import models
@@ -24,7 +24,7 @@ def get_services():
                    for key in ['protocol_type', 'keywords', 'service_name',
                                'service_code', 'group', 'description'])
         fields = {}
-        for name, f in service._fields.iteritems():
+        for name, f in service._fields.items():
             if name in ['id', 'created_at', '_cls']:
                 continue
             fields[name] = {
@@ -66,7 +66,7 @@ def receive_report():
 
     try:
         doc = db_obj.save()
-    except mongoengine.ValidationError, e:
+    except mongoengine.ValidationError as e:
         logger.debug(e)
         # TODO: Send specification of the service used and a better error
         # description
@@ -100,7 +100,7 @@ def get_all_reports():
 
     all_reports = service_class.objects.all()
 
-    return make_response(json.dumps(map(mongo_to_dict, all_reports)))
+    return jsonify(list(map(mongo_to_dict, all_reports)))
 
 
 @api.route("/reports/<string:id>", methods=['GET'])

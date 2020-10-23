@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from flask.ext.script import Manager, Server
+from flask_script import Manager, Server
 
 from taarifa_backend import app
 from taarifa_backend.models import clear_database, Role, User, Service
@@ -32,7 +32,7 @@ def setup(email, clean):
                                          defaults={'description': 'Taarifa Admin'})
     _, created = User.objects.get_or_create(email=email, defaults={'roles': [role]})
     if not created:
-        print "User with email address %s did already exist and was not created" % email
+        print("User with email address %s did already exist and was not created" % email)
 
 
 @manager.command

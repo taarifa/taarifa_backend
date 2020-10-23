@@ -1,10 +1,10 @@
 import logging
 from os import environ
-import urlparse
+from urllib.parse import urlparse
 
 from flask import Flask
-from flask.ext.mongoengine import MongoEngine
-from flask.ext.security import Security, MongoEngineUserDatastore
+from flask_mongoengine import MongoEngine
+from flask_security import Security, MongoEngineUserDatastore
 
 # configure the logging
 logging.basicConfig(level='DEBUG',
@@ -12,7 +12,7 @@ logging.basicConfig(level='DEBUG',
 
 app = Flask(__name__)
 if environ.get('MONGOLAB_URI'):
-    url = urlparse.urlparse(environ['MONGOLAB_URI'])
+    url = urlparse(environ['MONGOLAB_URI'])
     app.config['MONGODB_SETTINGS'] = {'username': url.username,
                                       'password': url.password,
                                       'host': url.hostname,
