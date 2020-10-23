@@ -39,3 +39,6 @@ data
 
 # VSCode
 .vscode
+
+# Heroku
+.env
