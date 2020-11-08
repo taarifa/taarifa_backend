@@ -11,13 +11,8 @@ logging.basicConfig(level='DEBUG',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
-if environ.get('MONGOLAB_URI'):
-    url = urlparse(environ['MONGOLAB_URI'])
-    app.config['MONGODB_SETTINGS'] = {'username': url.username,
-                                      'password': url.password,
-                                      'host': url.hostname,
-                                      'port': url.port,
-                                      'db': url.path[1:]}
+if environ.get('MONGO_URI'):
+    app.config['MONGODB_SETTINGS'] = {'host': environ['MONGO_URI']}
 else:
     app.config['MONGODB_SETTINGS'] = {'db': environ.get("DBNAME", "taarifa_backend")}
 app.config['SECRET_KEY'] = 'hush'
